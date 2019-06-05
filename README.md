@@ -8,7 +8,7 @@ This scripts is suitable for de:code 2019 currently.
 
 You can get session information of de:code 2019 with this script.
 
-You can get PDF/PPT status of each session. ``○`` means the PowerPoint/PDF/movie is ready to get, ``★`` means is coming soon, and ``-`` means not available, unfortunately.
+You can get PowerPoint/PDF/movie status of each session. ``○`` means the status is ready to get, ``★`` means is coming soon, and ``-`` means not available, unfortunately.
 
 ## Requirement
 
