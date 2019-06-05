@@ -21,6 +21,10 @@ SESSION_KEYS = [
 
 # IDの最大カウント数
 MAX_COUNT = 99
+# DIV(1)の最大カウント数
+MAX_DIV1 = 67
+# DIV(2)の最大カウント数
+MAX_DIV2 = 20
 
 # 出力列
 OUTPUT_COLUMNS =[

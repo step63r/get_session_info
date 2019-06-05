@@ -2,21 +2,21 @@
 
 Get session information from Microsoft summit.
 
-This scripts is suitable for Microsoft Tech Summit 2018 currently.
+This scripts is suitable for de:code 2019 currently.
 
 ## Description
 
-You can get session information of Microsoft Tech Summit 2018 with this script.
+You can get session information of de:code 2019 with this script.
 
-You can get PDF/PPT status of each session. ``○`` means the PDF/PPT is ready to get, ``★`` means is coming soon, and ``-`` means not available, unfortunately.
+You can get PDF/PPT status of each session. ``○`` means the PowerPoint/PDF/movie is ready to get, ``★`` means is coming soon, and ``-`` means not available, unfortunately.
 
 ## Requirement
 
-- Windows 10 Home (64-bit)
-- Python 3.6.5
+- Windows 10
+- Python 3.7.3
 - selenium 3.14.1
 - Google Chrome
-- ChromeDriver 2.45
+- ChromeDriver
 
 ## Usage
 
@@ -53,6 +53,8 @@ Set you Microsoft account password.
 #### OUTPUT_PATH
 
 Set output csv file path.
+
+NOTICE: The output csv file is encoded with **UTF-8**. You can't read it via Excel, unfortunately.
 
 ## Contribution
 

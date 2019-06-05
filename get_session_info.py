@@ -57,6 +57,7 @@ def main(login_id, login_pass, output_path):
             WebDriverWait(driver, 10).until(
                 EC.element_to_be_clickable((By.XPATH, xpath_config.XPATH_PERSONAL_BTN))
             )
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             driver.find_element_by_xpath(xpath_config.XPATH_PERSONAL_BTN).click()
 
             # パスワード
@@ -76,65 +77,62 @@ def main(login_id, login_pass, output_path):
         )
         driver.find_element_by_xpath(xpath_config.XPATH_BTN_SESSIONS).click()
 
-        print("▼▼▼　セッション情報取得開始　▼▼▼")
-        for session_key in config.SESSION_KEYS:
-            for session_id in range(0, config.MAX_COUNT + 1):
+        print("セッションコード取得中")
+        # セッションコードとセッション名を取得する
+        session_dict = {}
+        for div1 in range(1, config.MAX_DIV1 + 1):
+            for div2 in range(1, config.MAX_DIV2 + 1):
                 try:
-                    # 検索中のセッションコード
-                    target_session = "{0}{1:02d}".format(session_key, session_id)
+                    # セッションコード
+                    session_id = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_CODE.replace("DIV_NUMBER_1", str(div1)).replace("DIV_NUMBER_2", str(div2))).text
+                    # セッション名
+                    session_name = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_NAME.replace("DIV_NUMBER_1", str(div1)).replace("DIV_NUMBER_2", str(div2))).text
+                    # 辞書に追加
+                    session_dict[session_id] = session_name
+                    print(session_id, session_name)
 
-                    for div1 in range(1, 68):
-                        for div2 in range(1, 21):
-                            try:
-                                # div番号でセッションコードを取得する
-                                selected_session_id = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_CODE.replace("DIV_NUMBER_1", str(div1)).replace("DIV_NUMBER_2", str(div2))).text
-
-                                # 検索中のコードとdiv番号で取得したコードが一致したら処理続行
-                                if target_session == selected_session_id:
-                                    # セッション名
-                                    name = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_NAME.replace("DIV_NUMBER_1", str(div1)).replace("DIV_NUMBER_2", str(div2))).text
-
-                                    # PowerPoint
-                                    ppt = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_PPT.replace("SESSION_ID", target_session)).text
-                                    if ppt == config.PPT_READY:
-                                        ppt = "○"
-                                    elif ppt == config.PPT_COMMING_SOON:
-                                        ppt = "★"
-                                    elif ppt == config.PPT_NOT_READY:
-                                        ppt = "-"
-
-                                    # PDF
-                                    pdf = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_PDF.replace("SESSION_ID", target_session)).text
-                                    if pdf == config.PDF_READY:
-                                        pdf = "○"
-                                    elif pdf == config.PDF_COMMING_SOON:
-                                        pdf = "★"
-                                    elif pdf == config.PDF_NOT_READY:
-                                        pdf = "-"
-
-                                    # 動画
-                                    mov = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_MOV.replace("SESSION_ID", target_session)).text
-                                    if mov == config.MOV_READY:
-                                        mov = "○"
-                                    elif mov == config.MOV_COMMING_SOON:
-                                        mov = "★"
-                                    elif mov == config.MOV_NOT_READY:
-                                        mov = "-"
-
-                                    se = pandas.Series([target_session, name, ppt, pdf, mov], index=ret.columns)
-                                    ret = ret.append(se, ignore_index=True)
-                                    print(target_session, name)
-
-                                else:
-                                    continue
-                            except NoSuchElementException:
-                                continue
                 except NoSuchElementException:
                     continue
-        print("▲▲▲　セッション情報取得終了　▲▲▲")
+
+        print("セッション情報取得中")
+        for session_id in session_dict:
+            try:
+                # PowerPoint
+                ppt = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_PPT.replace("SESSION_ID", session_id)).text
+                if ppt == config.PPT_READY:
+                    ppt = "○"
+                elif ppt == config.PPT_COMMING_SOON:
+                    ppt = "★"
+                elif ppt == config.PPT_NOT_READY:
+                    ppt = "-"
+                
+                # PDF
+                pdf = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_PDF.replace("SESSION_ID", session_id)).text
+                if pdf == config.PDF_READY:
+                    pdf = "○"
+                elif pdf == config.PDF_COMMING_SOON:
+                    pdf = "★"
+                elif pdf == config.PDF_NOT_READY:
+                    pdf = "-"
+                
+                # 動画
+                mov = driver.find_element_by_xpath(xpath_config.XPATH_SESSION_MOV.replace("SESSION_ID", session_id)).text
+                if mov == config.MOV_READY:
+                    mov = "○"
+                elif mov == config.MOV_COMMING_SOON:
+                    mov = "★"
+                elif mov == config.MOV_NOT_READY:
+                    mov = "-"
+
+                se = pandas.Series([session_id, session_dict[session_id], ppt, pdf, mov], index=ret.columns)
+                ret = ret.append(se, ignore_index=True)
+                print(session_id, ppt, pdf, mov)
+
+            except NoSuchElementException:
+                pass
 
     print("CSV出力中")
-    ret.to_csv(output_path, index=False, encoding="cp932")
+    ret.to_csv(output_path, index=False, encoding="utf-8")
 
 if __name__ == "__main__":
     # コマンドライン引数取得
